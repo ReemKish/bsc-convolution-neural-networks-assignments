@@ -29,14 +29,15 @@ class RandomImageDataset(Dataset):
         # same index (make it deterministic per index), but don't mess-up
         # RNG state outside this method.
 
-        # ====== YOUR CODE: ======
-        raise NotImplementedError()
-        # ========================
+        rng_state = torch.random.get_rng_state()
+        torch.random.manual_seed(index)
+        myTensor = torch.randint(0,256,self.image_dim)
+        myClass = int(torch.randint(0, self.num_classes, (1,)))
+        torch.random.set_rng_state(rng_state)
+        return myTensor,myClass
 
     def __len__(self):
-        # ====== YOUR CODE: ======
-        raise NotImplementedError()
-        # ========================
+        return self.num_samples
 
 
 class SubsetDataset(Dataset):
@@ -61,12 +62,11 @@ class SubsetDataset(Dataset):
         # TODO: Return the item at index + offset from the source dataset.
         # Make sure to raise an IndexError if index is out of bounds.
 
-        # ====== YOUR CODE: ======
-        raise NotImplementedError()
-        # ========================
+        if index >= self.subset_len:
+            raise IndexError("Index is out of bounds")
+            
+        return self.source_dataset[index+self.offset]
 
     def __len__(self):
-        # ====== YOUR CODE: ======
-        raise NotImplementedError()
-        # ========================
+        return self.subset_len
 

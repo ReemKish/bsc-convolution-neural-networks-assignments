@@ -28,9 +28,16 @@ def create_train_validation_loaders(dataset: Dataset, validation_ratio,
     # 2. No sample is in both datasets. You can select samples at random
     #    from the dataset.
 
-    # ====== YOUR CODE: ======
-    raise NotImplementedError()
-    # ========================
+    idx = int(np.floor(validation_ratio * len(dataset)))
+    indices = list(range(len(dataset)))
+    np.random.shuffle(indices)
+    valid_ind = indices[:idx]
+    train_ind = indices[idx:]
+    
+    valid_sampler = sampler.SubsetRandomSampler(valid_ind)
+    train_sampler = sampler.SubsetRandomSampler(train_ind)
+    
+    dl_valid = DataLoader(dataset, batch_size = batch_size, sampler = valid_sampler, num_workers = num_workers)
+    dl_train = DataLoader(dataset, batch_size = batch_size, sampler = train_sampler, num_workers = num_workers)
 
     return dl_train, dl_valid
-
