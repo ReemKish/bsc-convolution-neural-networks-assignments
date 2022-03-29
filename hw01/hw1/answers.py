@@ -67,28 +67,21 @@ An equation: $e^{i\pi} -1 = 0$
 # Part 4 answers
 
 part4_q1 = r"""
-**Your answer:**
 
+The ideal pattern is where all points reside on the x-axis as it indicates zero validation error.
+In the case of our model, the points are scattered around the x-axis in a symmetical matter, indicating that there's no bias towards one side.
+The vast majority of the points are in close proximity to the x-axis and therefore we can infer that the model's fitness is high.
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+In the top-5 features plot, the points are scattered unevenly around the x-axis as the points that are the furthest from it tend to be below it.
+The many far points indicate a less fit model.
 """
 
 part4_q2 = r"""
-**Your answer:**
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+1. We used logspace instead of linspace because 𝜆 is a regularizaion constant, in particular a multiplicative constant. 
+   Therefore, its impact on the results is much more subtle, so it requires a great change in value to inccur a 
+   noticable change in the model's accuracy. Thereby logspace is a fitting scale.
+   (Notice how in the degree's case, a very slight change can "make or break" the model's performance)
+2. 180 ( = k_folds * |degree_range| * |𝜆_range|)
 
 """
 

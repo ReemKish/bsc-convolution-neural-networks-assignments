@@ -30,7 +30,7 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
 
         y_pred = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        y_pred = X @ self.weights_
         # ========================
 
         return y_pred
@@ -43,12 +43,13 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
         """
         X, y = check_X_y(X, y)
 
-        # TODO: Calculate the optimal weights using the closed-form solution
-        # Use only numpy functions.
-
         w_opt = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        # W = (X^t*X + L*I)^-1 * X^t*y
+        I = np.identity(X.shape[1])
+        L = self.reg_lambda
+        Xt = X.transpose()
+        w_opt = np.linalg.inv(Xt@X + L*I) @ (Xt @ y)
         # ========================
 
         self.weights_ = w_opt
@@ -74,7 +75,8 @@ class BiasTrickTransformer(BaseEstimator, TransformerMixin):
 
         xb = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        N = X.shape[0]
+        xb = np.concatenate((np.ones((N,1)), X), axis=1)
         # ========================
 
         return xb
@@ -90,7 +92,7 @@ class BostonFeaturesTransformer(BaseEstimator, TransformerMixin):
         # TODO: Your custom initialization, if needed
         # Add any hyperparameters you need and save them as above
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        pass
         # ========================
 
     def fit(self, X, y=None):
@@ -112,7 +114,9 @@ class BostonFeaturesTransformer(BaseEstimator, TransformerMixin):
 
         X_transformed = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        X = X[:, 1:]  # undo the bias trick as a ones column will be added anyway
+        poly = PolynomialFeatures(self.degree, interaction_only = True)
+        X_transformed = poly.fit_transform(X)
         # ========================
 
         return X_transformed
@@ -132,11 +136,20 @@ def top_correlated_features(df: DataFrame, target_feature, n=5):
         Both the returned sequences should be sorted so that the best (most
         correlated) feature is first.
     """
-
-    # TODO: Calculate correlations with target and sort features by it
+    # --- Implemented ---
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    D = df
+    Y = df[target_feature]
+    mD = D.mean()
+    mY = Y.mean()
+    covDY = (D - mD).mul(Y-mY, axis=0).sum()
+    varD = np.sqrt(((D - mD)**2).sum())
+    varY = np.sqrt(((Y - mY)**2).sum())
+    phiDY = covDY / (varD*varY)
+    topn = abs(phiDY).nlargest(n+1)[1:]  # ommit 1st row as it will always be the target feature itself
+    top_n_features = topn.index
+    top_n_corr = topn
     # ========================
 
     return top_n_features, top_n_corr
@@ -170,7 +183,29 @@ def cv_best_hyperparams(model: BaseEstimator, X, y, k_folds,
     # - You can use MSE or R^2 as a score.
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    DEGREE_PARAM = 'bostonfeaturestransformer__degree'
+    LAMBDA_PARAM = 'linearregressor__reg_lambda'
+    params = dict()
+    best_params = dict()
+    best_mse = float("inf")
+    for deg in degree_range:
+        params[DEGREE_PARAM] = deg
+        for lam in lambda_range:
+            params[LAMBDA_PARAM] = lam
+            avg_mse = 0
+            model.set_params(**params)
+            kf = sklearn.model_selection.KFold(n_splits=k_folds)
+            for train_index, test_index in kf.split(X):
+                X_train, X_test = X[train_index], X[test_index]
+                y_train, y_test = y[train_index], y[test_index]
+                model.fit(X_train, y_train)
+                y_pred = model.predict(X_test)
+                mse = np.mean((y_test - y_pred) ** 2)
+                avg_mse += mse / k_folds
+            if avg_mse < best_mse:
+                best_mse = avg_mse
+                best_params[DEGREE_PARAM] = params[DEGREE_PARAM]
+                best_params[LAMBDA_PARAM] = params[LAMBDA_PARAM]
     # ========================
 
     return best_params
