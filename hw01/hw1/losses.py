@@ -66,7 +66,9 @@ class SVMHingeLoss(ClassifierLoss):
 
         # TODO: Save what you need for gradient calculation in self.grad_ctx
         # ====== YOUR CODE: ======
-        
+        self.grad_ctx["M"] = M
+        self.grad_ctx["x"] = x
+        self.grad_ctx["y"] = y
         # ========================
 
         return loss
@@ -79,7 +81,15 @@ class SVMHingeLoss(ClassifierLoss):
 
         grad = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        M = (self.grad_ctx["M"] > 0).float()
+        ys = self.grad_ctx["y"].reshape(-1,1)
+        rows = torch.sum(M, axis = 1).reshape(-1,1)
+        s_yi = M.gather(1, ys).reshape(-1,1)
+        a = torch.ones_like(M)
+        a = a.scatter(1, ys, (-1)*(rows - s_yi))
+        G = a * M
+        grad = torch.transpose(self.grad_ctx["x"], 0, 1) @ G
+        grad = grad / torch.tensor(self.grad_ctx["x"].shape[0], dtype=float)
         # ========================
 
         return grad
