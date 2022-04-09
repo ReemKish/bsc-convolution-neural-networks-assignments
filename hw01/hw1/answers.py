@@ -23,42 +23,22 @@ Therefore, we would like to increase k up to the point it gives enough options f
 # Part 3 answers
 
 part3_q1 = r"""
-**Your answer:**
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+The selection of the delta specifies the length of the margin, but we can notice that both delta and lambda control the tradeoff between the data loss and the regularization. therefore, by choosing different delta's we can also choose different lamba's which will give us the same results for those different delta's - meaning we can choose an arbitrary delta.
 """
 
 part3_q2 = r"""
-**Your answer:**
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+1. We can see in the images that the numbers are written in yellow and the background is green. therefore, it seems that the model checks weather the yellow area is parallel to the white area in the picture (the number itself) and the green area is parallel to the black (the background).
+In images that were labeled incorrectly the number in the image (the white area) was more parallel to the yellow in the incorrect class that was predicted that in the correct class - and the same with the background.
+2. It is similar in the way that in both KNN and here we are trying to find the closest image from k (here 9) images.
+It is different because in KNN we predict according to the closest k training and in SVM we predict according to the highest dot product score.
 """
 
 part3_q3 = r"""
-**Your answer:**
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+1. I would sat that the learning rate is good. the lost descends gradualy and uniformly. for a too high rate we would see it misses the minimum of the loss function and has too big steps. for too low we would see if descends too slowly and takes too long to reach the minimum.
+2. Slightly overfitted - the training accuracy is very high and the loss is higher for the validation.
 """
 
 # ==============
