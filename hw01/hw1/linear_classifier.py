@@ -114,7 +114,7 @@ class LinearClassifier(object):
             total_correct = 0
             average_loss = 0
             
-            for local_batch, local_labels in dl_train:
+            for local_batch, local_labels in dl_valid:
                 y_pred, class_scores = self.predict(local_batch)
                 loss = loss_fn(local_batch, local_labels, class_scores, y_pred) + torch.sum(weight_decay*self.weights.pow(2.0))
                 average_loss += loss
