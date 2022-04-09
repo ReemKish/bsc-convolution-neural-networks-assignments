@@ -101,8 +101,29 @@ class LinearClassifier(object):
             average_loss = 0
 
             # ====== YOUR CODE: ======
-            raise NotImplementedError()
-            # ========================
+            for local_batch, local_labels in dl_train:
+                y_pred, class_scores = self.predict(local_batch)
+                loss = loss_fn(local_batch, local_labels, class_scores, y_pred) + torch.sum(weight_decay*self.weights.pow(2.0))
+                grad = loss_fn.grad() + weight_decay * self.weights
+                self.weights = self.weights - learn_rate*grad
+                average_loss += loss
+                total_correct += self.evaluate_accuracy(local_labels, y_pred)
+            train_res.loss.append(average_loss / len(dl_train))
+            train_res.accuracy.append(total_correct / len(dl_train))
+            
+            total_correct = 0
+            average_loss = 0
+            
+            for local_batch, local_labels in dl_train:
+                y_pred, class_scores = self.predict(local_batch)
+                loss = loss_fn(local_batch, local_labels, class_scores, y_pred) + torch.sum(weight_decay*self.weights.pow(2.0))
+                average_loss += loss
+                total_correct += self.evaluate_accuracy(local_labels, y_pred)
+
+            valid_res.loss.append(average_loss / len(dl_valid))
+            valid_res.accuracy.append(total_correct / len(dl_valid))
+            
+             # ========================
             print('.', end='')
 
         print('')
@@ -121,7 +142,16 @@ class LinearClassifier(object):
         # The output shape should be (n_classes, C, H, W).
 
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        
+        W = None
+        if has_bias:
+            W = self.weights[:-1]
+        else:
+            W = self.weights
+        
+        W = torch.transpose(W,0,1)
+        w_images = W.reshape(self.n_classes, img_shape[0], img_shape[1], img_shape[2])
+
         # ========================
 
         return w_images
