@@ -31,9 +31,23 @@ class MLP(Block):
         """
         blocks = []
 
-        # TODO: Build the MLP architecture as described.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        def get_activation_block(act_name):
+            if act_name == 'relu':
+                return ReLU()
+            elif act_name == 'sigmoid':
+                return Sigmoid()
+            else:  # undefined
+                return ReLU()
+
+        prev = in_features
+        for l in hidden_features:
+            blocks.append(Linear(prev, l))
+            blocks.append(get_activation_block(activation))
+            prev = l
+        blocks.append(Linear(prev, num_classes))
+        #blocks.append(get_activation_block(activation))
+        #blocks.append(CrossEntropyLoss())
         # ========================
 
         self.sequence = Sequential(*blocks)
@@ -129,6 +143,6 @@ class YourCodeNet(ConvClassifier):
     # For example, add batchnorm, dropout, skip connections, change conv
     # filter sizes etc.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    #raise NotImplementedError()
     # ========================
 
