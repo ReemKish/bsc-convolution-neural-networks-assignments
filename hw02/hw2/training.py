@@ -72,7 +72,21 @@ class Trainer(abc.ABC):
             # - Optional: Implement early stopping. This is a very useful and
             #   simple regularization technique that is highly recommended.
             # ====== YOUR CODE: ======
-            raise NotImplementedError()
+            result_train = self.train_epoch(dl_train)
+            result_test = self.test_epoch(dl_test)
+            train_loss.append((sum(result_train.losses)/(len(result_train.losses))).item())
+            train_acc.append(result_train.accuracy.item())
+            test_loss.append((sum(result_test.losses)/(len(result_test.losses))).item())
+            test_acc.append(result_test.accuracy.item())
+            
+            if best_acc is not None and best_acc <= test_loss[-1]:
+                epochs_without_improvement+=1
+            else:
+                best_acc = test_loss[-1]
+                epochs_without_improvement = 0
+            
+            if epochs_without_improvement == early_stopping:
+                break;
             # ========================
 
         return FitResult(actual_num_epochs,
@@ -188,7 +202,14 @@ class BlocksTrainer(Trainer):
         # - Optimize params
         # - Calculate number of correct predictions
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        Z = self.model.forward(X)
+        self.optimizer.zero_grad()
+        loss = self.loss_fn(Z,y)
+        dout = self.loss_fn.backward()
+        self.model.backward(dout)
+        self.optimizer.step()
+        Z = torch.argmax(Z, axis = 1)
+        num_correct = torch.sum(Z == y)
         # ========================
 
         return BatchResult(loss, num_correct)
@@ -200,7 +221,10 @@ class BlocksTrainer(Trainer):
         # - Forward pass
         # - Calculate number of correct predictions
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        Z = self.model.forward(X)
+        loss = self.loss_fn(Z,y)
+        Z = torch.argmax(Z, axis = 1)
+        num_correct = torch.sum(Z == y)
         # ========================
 
         return BatchResult(loss, num_correct)
